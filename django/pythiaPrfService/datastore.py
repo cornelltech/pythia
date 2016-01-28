@@ -7,7 +7,7 @@ from settings import *
 from crypto import *
 
 # Connect to mongoDB
-mongoengine.connect(PYTHIA_PRF_DB)
+mongoengine.connect(PYTHIA_PRF_DB, host=PYTHIA_PRF_DB_HOST, port=PYTHIA_PRF_DB_PORT)
 
 
 class StateEntry(mongoengine.Document):
@@ -62,7 +62,7 @@ def dropStateEntry(w):
 
 class QueryCount(mongoengine.Document):
 	"""
-	Tracks the number of unique queries on a parameter t (tweak). Permits 
+	Tracks the number of unique queries on a parameter t (tweak). Permits
 	rate-limiting of queries which restricts guessing attacks.
 	"""
 	t = mongoengine.StringField(max_length=HASH_LENGTH)
@@ -70,13 +70,13 @@ class QueryCount(mongoengine.Document):
 	lastAccessTime = mongoengine.DateTimeField()
 
 	# An index on t makes lookups fast.
-	meta = { "indexes": [ 
+	meta = { "indexes": [
 			  # An index on t makes counting accesses fast.
-			  "t", 
+			  "t",
 
-			  # An expiration index on time allows old information to 
+			  # An expiration index on time allows old information to
 			  # quietly disappear from the database once the period has past.
-			  { 
+			  {
 			    'fields': ['lastAccessTime'],
 		        'expireAfterSeconds': RATE_LIMIT_PERIOD_SECONDS
 			 }
@@ -85,18 +85,18 @@ class QueryCount(mongoengine.Document):
 
 def noteQuery(t, threshold=RATE_LIMIT_THRESHOLD):
 	"""
-	Increments counters associated with query parameter @t (tweak) and 
+	Increments counters associated with query parameter @t (tweak) and
 	reports whether or not @threshold for @t has been exceeded.
 	"""
 	# NOTE: Using lastAccessTime for expiration time isn't quite right.
 	# For hourly rate-limiting it's ok because we don't antictipate requests
-	# coming once per hour for 10 hours in a row (which would erroneously 
-	# trigger) the rate-limit. But for something like monthly or daily limits, 
+	# coming once per hour for 10 hours in a row (which would erroneously
+	# trigger) the rate-limit. But for something like monthly or daily limits,
 	# this implementation fails and can trigger unintended rate-limiting.
 
 	# Record this query in datastore
 	QueryCount.objects(t=t).update_one(
-		upsert = True, 
+		upsert = True,
 		inc__count = 1,
 		set__lastAccessTime = datetime.now)
 
@@ -116,12 +116,12 @@ class VerificationCode(mongoengine.Document):
 	vcode = mongoengine.StringField(max_length=HASH_LENGTH)
 	creationTime = mongoengine.DateTimeField()
 
-	meta = { "indexes": [ 
+	meta = { "indexes": [
 			  # Fast lookup
-			  "w", 
+			  "w",
 
 			  # Expire old codes
-			  { 
+			  {
 			    'fields': ['creationTime'],
 		        'expireAfterSeconds': VERIFICATIION_CODE_EXPIRE_SECONDS
 			 }
@@ -155,4 +155,3 @@ def getVerificationCode(w):
 		return entry.vcode
 	else:
 		return None
-

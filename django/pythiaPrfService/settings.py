@@ -2,6 +2,7 @@
 Settings for the Pythia PRF service.
 """
 from crypto import *
+import os
 
 ##
 # Datastore settings
@@ -9,6 +10,8 @@ from crypto import *
 
 # The name of our mongo db instance
 PYTHIA_PRF_DB = 'pythiaPrf'
+PYTHIA_PRF_DB_HOST = os.getenv('MONGODB_HOST', '127.0.0.1')
+PYTHIA_PRF_DB_PORT = os.getenv('MONGODB_PORT', 27017)
 
 
 ##
@@ -31,8 +34,8 @@ VERIFICATIION_CODE_EXPIRE_SECONDS = 3600*24*7
 
 # TODO: Read these from S3
 # Server secret keys, including previous secret keys.
-keys = [ 
-		 bytes("281fc58e9d22ad08cc17ad0d8f2688e4403440b03df3").encode('utf-8'), 
+keys = [
+		 bytes("281fc58e9d22ad08cc17ad0d8f2688e4403440b03df3").encode('utf-8'),
  		 bytes("0d8f2688e4403440b03df3281fc58e9d22ad08cc17ad").encode('utf-8'),
 		]
 
@@ -56,7 +59,7 @@ ERROR_MISSING_PARAMS = "Your request is missing required parameters. "\
 
 ERROR_EXCEEDED_QUERY_LIMIT = "The number of queries for this tweak t "\
 	"has been exceeded. Only {0} queries are permitted every {1} seconds. "\
-	"This parameter is locked for {1} seconds.".format(RATE_LIMIT_THRESHOLD, 
+	"This parameter is locked for {1} seconds.".format(RATE_LIMIT_THRESHOLD,
 		RATE_LIMIT_PERIOD_SECONDS)
 
 
@@ -67,5 +70,3 @@ def dp(**kwargs):
 	"""
 	for label,value in kwargs.iteritems():
 		print "{0}\t{1}".format(label, value)
-
-
