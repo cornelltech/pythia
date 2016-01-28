@@ -11,7 +11,7 @@ import os
 # The name of our mongo db instance
 PYTHIA_PRF_DB = 'pythiaPrf'
 PYTHIA_PRF_DB_HOST = os.getenv('MONGODB_HOST', '127.0.0.1')
-PYTHIA_PRF_DB_PORT = os.getenv('MONGODB_PORT', 27017)
+PYTHIA_PRF_DB_PORT = int(os.getenv('MONGODB_PORT', 27017))
 
 
 ##
