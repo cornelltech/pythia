@@ -24,6 +24,12 @@ class StateEntry(mongoengine.Document):
 	meta = { "indexes": ["key"] }
 
 
+def printAllStateEntries():
+
+	print "printing all state entries"
+	for stateEntry in StateEntry.objects:
+		print "(" + stateEntry.key + ", " + stateEntry.value + ")"
+
 def getStateEntry(w):
 	"""
 	Get the state table entry, z, for client ID @w. If no entry is found, a new
@@ -34,13 +40,20 @@ def getStateEntry(w):
 	# Check the table
 	entry = StateEntry.objects(key=w).first()
 
+	# print (entry.key, entry.value)
+
 	# If there's no state for this key, make a new entry.
 	if not entry:
-		z = secureRandom(HASH_LENGTH)
-		entry = StateEntry(key=w, value=z).save()
+		print "no state entry for key " + w
+		return None
+		# z = secureRandom(HASH_LENGTH)
+		# entry = StateEntry(key=w, value=z).save()
 
 	return entry.value
 
+def addStateEntry(w):
+	z = secureRandom(HASH_LENGTH)
+	entry = StateEntry(key=w, value=z).save()
 
 def checkStateEntry(w):
 	"""

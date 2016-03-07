@@ -4,6 +4,7 @@ Settings for the Pythia PRF service.
 from crypto import *
 import os
 
+
 ##
 # Datastore settings
 ##
@@ -40,10 +41,16 @@ keys = [
 		]
 
 SERVER_SECRET_KEY = keys[0]
-SERVER_SKID = skid(keys[0])
+
+clientWs = [
+	"Wa_p747NO0Yh4ptIrbWA9vpmgopBgIzc"
+]
+
+
+# SERVER_SKID = skid(keys[0])
 
 # Put keys into a table mapping the secret key ID (skid) to the key value.
-keyTable = buildTable(keys)
+# keyTable = buildTable(keys)
 
 
 ##
@@ -70,3 +77,14 @@ def dp(**kwargs):
 	"""
 	for label,value in kwargs.iteritems():
 		print "{0}\t{1}".format(label, value)
+
+
+
+## for development purposes, remove when actual
+import datastore
+for w in clientWs:
+	if datastore.getStateEntry(w) == None:
+		datastore.addStateEntry(w)
+
+datastore.printAllStateEntries()
+# def setup():
